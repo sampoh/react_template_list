@@ -140,51 +140,34 @@ function StickyHeadTable() {
 
   let tableContainerHeight = isMobile?height - 189:height - 225;
 
-  const isFirstLoad = React.useRef(false);
-  const isSecondLoad = React.useRef(false);
-  const isThirdLoad = React.useRef(false);
-
   const [searchForm, setSearchForm] = React.useState<typeSearchForm>(defaultSearchForm);
 
   //ページャからのリクエスト
   React.useEffect(() => {
-    if(!isFirstLoad.current){
-      isFirstLoad.current = true; //初回ロード対策
-    }else if(isPagerEvent){
+    if(isPagerEvent){
       setBackdrop(true);
     }
   },[page,rowsPerPage]);
 
   //フォームからのリクエスト
   React.useEffect(() => {
-    if(!isSecondLoad.current){
-      isSecondLoad.current = true; //初回ロード対策
-    }else{
-    // }else if(searchForm.trigger > 0){ //こちらの場合は初回一覧データをロードしない
-      setIsPagerEvent(false);
-      setPage(0);
-      savedForm = searchForm;
-      setBackdrop(true);
-    }
+    setIsPagerEvent(false);
+    setPage(0);
+    savedForm = searchForm;
+    setBackdrop(true);
   },[searchForm.trigger]);
 
   //一覧ロード
   React.useEffect(() => {
-    if(!isThirdLoad.current){
-      isThirdLoad.current = true; //初回ロード対策
-    }else if(backdrop){
-      console.log('fetch started - list');
-      fetchListData(savedForm.name,page,rowsPerPage,setBackdrop,setListData);
-    }
+    fetchListData(savedForm.name,page,rowsPerPage,setBackdrop,setListData);
   },[backdrop])
 
   //詳細ロード
   React.useEffect(() => {
     if(detailIO.backdrop){
-      console.log('fetch started - detail');
       showDetail(detailIO,setDetailIO,setDetailData);
     }
-  },[detailIO])
+  },[detailIO]);
 
   return (
     <React.Fragment>

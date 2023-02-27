@@ -25,30 +25,25 @@ export default function App() {
   //例えばここの例では triggerCheck の値を書き換えるには setTriggerCheck(true) を実行する。
   
   const isFirstLoad = useRef(false);
-  const isSecondLoad = useRef(false);
 
   //セッションチェックトリガー
   useEffect(() => {
-    if(isSecondLoad.current){
+    if(isFirstLoad.current){
       checkSession(setSessionInfo);
     }
   },[triggerCheck]);
 
   //ログアウトトリガー
   useEffect(() => {
-    if(isSecondLoad.current){
+    if(isFirstLoad.current){
       logoutSession(setSessionInfo);
     }
   },[triggerLogout]);
 
   //初回セッションチェック
   useEffect(() => {
-    if(!isFirstLoad.current){
-      isFirstLoad.current = true;
-    }else{
-      isSecondLoad.current = true;
-      checkSession(setSessionInfo);
-    }
+    isFirstLoad.current = true;
+    checkSession(setSessionInfo);
   },[]);
   
   //<SessionContext.Provider>のvalue値で指定したものは中継せずに下層のどこでも取得可能
@@ -92,10 +87,13 @@ function checkSession(setSessionInfo:React.Dispatch<React.SetStateAction<typeSes
           setSessionInfo((prev)=>({...prev,...{loaded:true,hasSession:content.hasSession}}));
       }),
       onCatch:((err)=>{
-          // console.log('"catch" in checkSession');
+        if(err){
+          console.log(err);
+        }
+        console.log('"catch" in checkSession');
       }),
       onFinally:(()=>{
-          // console.log('"finally" in checkSession');
+        console.log('"finally" in checkSession');
       }),
     })
   }else{
